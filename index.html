@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Cinemas Kiosk</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            color: white;
+            width: 1080px;
+            height: 1920px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .container {
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 25px;
+            border-bottom: 3px solid #ff00ff;
+        }
+        
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 15px rgba(255, 0, 255, 0.7);
+        }
+        
+        .logo {
+            color: #ff00ff;
+            font-weight: bold;
+            font-size: 5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 0, 255, 0.8);
+        }
+        
+        .subtitle {
+            color: #ccc;
+            font-size: 2.2rem;
+            margin-top: 10px;
+        }
+        
+        .content-area {
+            display: flex;
+            flex: 1;
+            gap: 40px;
+        }
+        
+        .movie-selector {
+            width: 25%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .movie-button {
+            background: rgba(255, 0, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 25px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+        
+        .movie-button.active {
+            background: #ff00ff;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.7);
+        }
+        
+        .movie-button:hover {
+            background: #ff33ff;
+        }
+        
+        .movie-display {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .movie-poster {
+            width: 100%;
+            height: 810px; /* 16:9 aspect ratio for 1080px width */
+            background-color: #222;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 40px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+        
+        .movie-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .play-trailer {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: #ff00ff;
+            color: #fff;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+            font-size: 2.5rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+        }
+        
+        .play-trailer:hover {
+            transform: scale(1.1);
+        }
+        
+        .movie-info {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .movie-title {
+            font-size: 3.5rem;
+            margin-bottom: 25px;
+            color: #fff;
+        }
+        
+        .showtimes {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .showtime {
+            background: #ff00ff;
+            color: #fff;
+            padding: 25px 10px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 2.2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .showtime:hover {
+            background: #ff33ff;
+        }
+        
+        .admin-access {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 2.5rem;
+            z-index: 100;
+        }
+        
+        .admin-access:hover {
+            background: rgba(255, 0, 255, 0.3);
+        }
+        
+        .admin-panel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 900px;
+            background: rgba(0, 0, 0, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            z-index: 1000;
+            box-shadow: 0 0 50px rgba(255, 0, 255, 0.5);
+            border: 2px solid #ff00ff;
+            display: none;
+        }
+        
+        .admin-panel.visible {
+            display: block;
+        }
+        
+        .admin-panel h3 {
+            margin-bottom: 30px;
+            text-align: center;
+            color: #ff00ff;
+            font-size: 3rem;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 1.8rem;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 20px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1.8rem;
+        }
+        
+        .btn {
+            background: #ff00ff;
+            color: #fff;
+            border: none;
+            padding: 25px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.3s;
+            margin-top: 20px;
+            font-size: 2.2rem;
+        }
+        
+        .btn:hover {
+            background: #ff33ff;
+        }
+        
+        .trailer-modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.98);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .trailer-modal.visible {
+            display: flex;
+        }
+        
+        .trailer-content {
+            width: 90%;
+            height: 80%;
+            background: #000;
+            padding: 20px;
+            border-radius: 20px;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: -60px;
+            right: 0;
+            color: white;
+            font-size: 4rem;
+            cursor: pointer;
+            background: rgba(255, 0, 255, 0.7);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .youtube-container {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .youtube-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 15px;
+        }
+        
+        footer {
+            text-align: center;
+            color: #ccc;
+            font-size: 1.5rem;
+            margin-top: auto;
+            padding-top: 30px;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+            display: none;
+        }
+        
+        .overlay.visible {
+            display: block;
+        }
+        
+        .admin-actions {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .admin-actions .btn {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="admin-access" onclick="toggleAdmin()">
+            <i class="fas fa-cog"></i>
+        </div>
+        
+        <header>
+            <div class="logo">GRAND CINEMAS</div>
+            <p class="subtitle">Now Showing</p>
+        </header>
+        
+        <div class="content-area">
+            <div class="movie-selector" id="movie-selector">
+                <!-- Movie buttons will be generated here -->
+            </div>
+            
+            <div class="movie-display">
+                <div class="movie-poster">
+                    <img id="poster-img" src="https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_FMjpg_UX1000_.jpg" alt="Movie Poster">
+                    <div class="play-trailer" onclick="openTrailer()">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+                
+                <div class="movie-info">
+                    <h2 class="movie-title" id="movie-title">Avengers: Endgame</h2>
+                </div>
+                
+                <h3 style="font-size: 2.5rem; margin-bottom: 20px;">Showtimes</h3>
+                <div class="showtimes" id="showtimes-container">
+                    <!-- Showtimes will be generated here -->
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Grand Cinemas Kiosk System &copy; 2023</p>
+        </footer>
+        
+        <div class="admin-panel" id="admin-panel">
+            <h3>Admin Panel</h3>
+            <div class="form-group">
+                <label for="movie-select">Select Movie to Edit</label>
+                <select id="movie-select" onchange="loadMovieData()">
+                    <!-- Options will be generated here -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="poster-url">Poster Image URL</label>
+                <input type="text" id="poster-url" placeholder="Enter image URL">
+            </div>
+            <div class="form-group">
+                <label for="movie-title-input">Movie Title</label>
+                <input type="text" id="movie-title-input" placeholder="Enter movie title">
+            </div>
+            <div class="form-group">
+                <label for="youtube-url">YouTube Trailer URL</label>
+                <input type="text" id="youtube-url" placeholder="Enter YouTube URL">
+            </div>
+            <div class="form-group">
+                <label for="showtimes-input">Showtimes (comma separated)</label>
+                <input type="text" id="showtimes-input" placeholder="e.g., 13:30, 16:45, 19:30">
+            </div>
+            <div class="admin-actions">
+                <button class="btn" onclick="updateMovie()">Update Movie</button>
+                <button class="btn" onclick="addNewMovie()" style="background: #9c27b0;">Add New Movie</button>
+            </div>
+            <button class="btn" onclick="toggleAdmin()" style="background: #444;">Close Panel</button>
+        </div>
+        
+        <div class="trailer-modal" id="trailer-modal">
+            <div class="trailer-content">
+                <span class="close-modal" onclick="closeTrailer()">&times;</span>
+                <div class="youtube-container" id="youtube-container">
+                    <!-- YouTube iframe will be inserted here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="overlay" id="overlay"></div>
+    </div>
+
+    <script>
+        // Movie data array
+        let movies = [
+            {
+                id: 1,
+                posterUrl: "https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_FMjpg_UX1000_.jpg",
+                title: "Avengers: Endgame",
+                trailerUrl: "https://www.youtube.com/embed/TcMBFSGVi1c",
+                showtimes: ["13:30", "16:45", "20:00", "22:30"]
+            },
+            {
+                id: 2,
+                posterUrl: "https://m.media-amazon.com/images/M/MV5BMDliMmNhNDEtODUyOS00MjNlLTgxODEtN2U3NzIxMGVkZTA1L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg",
+                title: "Guardians of the Galaxy",
+                trailerUrl: "https://www.youtube.com/embed/d96cjJhvlMA",
+                showtimes: ["14:15", "17:30", "20:45", "23:00"]
+            },
+            {
+                id: 3,
+                posterUrl: "https://m.media-amazon.com/images/M/MV5BMTg2MzI1MTg3OF5BMl5BanBnXkFtZTgwNTU3NDA2MTI@._V1_.jpg",
+                title: "Interstellar",
+                trailerUrl: "https://www.youtube.com/embed/zSWdZVtXT7E",
+                showtimes: ["15:00", "18:15", "21:30"]
+            }
+        ];
+        
+        let currentMovieId = 1;
+        
+        // Admin access code
+        const ADMIN_CODE = "1984"; // Change this to your preferred code
+        
+        // Initialize the page with default or saved movie data
+        function initializePage() {
+            // Try to load from localStorage
+            const savedMovies = localStorage.getItem('movieData');
+            if (savedMovies) {
+                movies = JSON.parse(savedMovies);
+            }
+            
+            // Generate movie selector buttons
+            generateMovieSelector();
+            
+            // Load the first movie
+            loadMovie(currentMovieId);
+            
+            // Populate movie select in admin panel
+            populateMovieSelect();
+        }
+        
+        // Generate movie selector buttons
+        function generateMovieSelector() {
+            const container = document.getElementById('movie-selector');
+            container.innerHTML = '';
+            
+            movies.forEach(movie => {
+                const button = document.createElement('button');
+                button.className = 'movie-button';
+                if (movie.id === currentMovieId) {
+                    button.classList.add('active');
+                }
+                button.textContent = movie.title;
+                button.onclick = () => loadMovie(movie.id);
+                container.appendChild(button);
+            });
+        }
+        
+        // Load movie data
+        function loadMovie(movieId) {
+            currentMovieId = movieId;
+            const movie = movies.find(m => m.id === movieId);
+            
+            if (movie) {
+                document.getElementById('poster-img').src = movie.posterUrl;
+                document.getElementById('movie-title').textContent = movie.title;
+                
+                // Generate showtimes
+                generateShowtimes(movie.showtimes);
+                
+                // Update active button
+                const buttons = document.querySelectorAll('.movie-button');
+                buttons.forEach(btn => btn.classList.remove('active'));
+                buttons[movieId - 1].classList.add('active');
+            }
+        }
+        
+        // Generate showtime buttons
+        function generateShowtimes(showtimes) {
+            const container = document.getElementById('showtimes-container');
+            container.innerHTML = '';
+            
+            showtimes.forEach(time => {
+                const showtimeElement = document.createElement('div');
+                showtimeElement.className = 'showtime';
+                showtimeElement.textContent = time;
+                container.appendChild(showtimeElement);
+            });
+        }
+        
+        // Open trailer modal
+        function openTrailer() {
+            const movie = movies.find(m => m.id === currentMovieId);
+            if (!movie) return;
+            
+            const modal = document.getElementById('trailer-modal');
+            const container = document.getElementById('youtube-container');
+            
+            // Extract YouTube ID from URL
+            const videoId = getYouTubeId(movie.trailerUrl);
+            
+            // Create iframe
+            container.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            
+            modal.classList.add('visible');
+            document.getElementById('overlay').classList.add('visible');
+        }
+        
+        // Close trailer modal
+        function closeTrailer() {
+            const modal = document.getElementById('trailer-modal');
+            const container = document.getElementById('youtube-container');
+            
+            // Remove iframe to stop video playback
+            container.innerHTML = '';
+            
+            modal.classList.remove('visible');
+            document.getElementById('overlay').classList.remove('visible');
+        }
+        
+        // Extract YouTube ID from URL
+        function getYouTubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+        
+        // Populate movie select in admin panel
+        function populateMovieSelect() {
+            const select = document.getElementById('movie-select');
+            select.innerHTML = '';
+            
+            movies.forEach(movie => {
+                const option = document.createElement('option');
+                option.value = movie.id;
+                option.textContent = movie.title;
+                select.appendChild(option);
+            });
+        }
+        
+        // Load movie data into admin form
+        function loadMovieData() {
+            const select = document.getElementById('movie-select');
+            const movieId = parseInt(select.value);
+            const movie = movies.find(m => m.id === movieId);
+            
+            if (movie) {
+                document.getElementById('poster-url').value = movie.posterUrl;
+                document.getElementById('movie-title-input').value = movie.title;
+                document.getElementById('youtube-url').value = movie.trailerUrl;
+                document.getElementById('showtimes-input').value = movie.showtimes.join(', ');
+            }
+        }
+        
+        // Update movie data from admin form
+        function updateMovie() {
+            const select = document.getElementById('movie-select');
+            const movieId = parseInt(select.value);
+            const movieIndex = movies.findIndex(m => m.id === movieId);
+            
+            if (movieIndex === -1) return;
+            
+            // Get values from form
+            const posterUrl = document.getElementById('poster-url').value;
+            const title = document.getElementById('movie-title-input').value;
+            const trailerUrl = document.getElementById('youtube-url').value;
+            const showtimes = document.getElementById('showtimes-input').value.split(',').map(t => t.trim());
+            
+            // Update movie object
+            movies[movieIndex] = {
+                ...movies[movieIndex],
+                posterUrl: posterUrl || movies[movieIndex].posterUrl,
+                title: title || movies[movieIndex].title,
+                trailerUrl: trailerUrl || movies[movieIndex].trailerUrl,
+                showtimes: showtimes.length > 0 ? showtimes : movies[movieIndex].showtimes
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('movieData', JSON.stringify(movies));
+            
+            // Update the page if this is the current movie
+            if (currentMovieId === movieId) {
+                loadMovie(currentMovieId);
+            }
+            
+            // Update selector buttons
+            generateMovieSelector();
+            
+            alert('Movie updated successfully!');
+        }
+        
+        // Add a new movie
+        function addNewMovie() {
+            const newId = Math.max(...movies.map(m => m.id)) + 1;
+            
+            const newMovie = {
+                id: newId,
+                posterUrl: "https://via.placeholder.com/1920x1080/222/ffffff?text=New+Movie",
+                title: "New Movie",
+                trailerUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+                showtimes: ["14:00", "17:00", "20:00"]
+            };
+            
+            movies.push(newMovie);
+            
+            // Save to localStorage
+            localStorage.setItem('movieData', JSON.stringify(movies));
+            
+            // Update UI
+            populateMovieSelect();
+            generateMovieSelector();
+            
+            // Select the new movie
+            document.getElementById('movie-select').value = newId;
+            loadMovieData();
+            
+            alert('New movie added! Please update its details.');
+        }
+        
+        // Toggle admin panel visibility
+        function toggleAdmin() {
+            const adminPanel = document.getElementById('admin-panel');
+            const overlay = document.getElementById('overlay');
+            
+            if (adminPanel.classList.contains('visible')) {
+                adminPanel.classList.remove('visible');
+                overlay.classList.remove('visible');
+            } else {
+                // Request admin code
+                const code = prompt("Please enter admin access code:");
+                if (code === ADMIN_CODE) {
+                    // Load current movie data into form
+                    document.getElementById('movie-select').value = currentMovieId;
+                    loadMovieData();
+                    
+                    adminPanel.classList.add('visible');
+                    overlay.classList.add('visible');
+                } else if (code !== null) {
+                    alert("Invalid access code!");
+                }
+            }
+        }
+        
+        // Initialize the page when loaded
+        window.onload = initializePage;
+    </script>
+</body>
+</html>
